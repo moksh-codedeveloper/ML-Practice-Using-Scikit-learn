@@ -3,7 +3,7 @@ model1 = joblib.load("./models/iso_forest_model.pkl")
 model2 = joblib.load("./models/kmeans_model.pkl")
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from core.feature_extracter import load_flow_stats_as_dataframe
+from core.feature_extracter import load_flow_stats_as_dataframe, load_csv_as_dataframe
 
 def test_iso_models():
     X = load_flow_stats_as_dataframe("../core/logs/flow_stats.json")
@@ -14,5 +14,14 @@ def test_iso_models():
     print("[+] Isolation Forest model predictions:")
     print(predictions)
 
+def test_kmeans_models():
+    X = load_csv_as_dataframe("../logs/data_log.csv")
+    X = X.drop(columns=["ip_src", "ip_dest", "timestamp", "protocol", "app_protocol", "suspicious_keywords", "error"], errors="ignore")
+    print("[+] Testing KMeans model...")
+    predictions = model2.predict(X)
+    print("[+] KMeans model predictions:")
+    print(predictions)
+
 if __name__ == "__main__":
-    test_iso_models()
+    # test_iso_models()
+    test_kmeans_models()
