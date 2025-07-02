@@ -1,16 +1,31 @@
 import json
 import pandas as pd
 
-def load_flow_stats_as_dataframe(json_file):
-    with open(json_file, 'r') as f:
-        logs = json.load(f)
+import json
+import pandas as pd
 
+def load_flow_stats_as_dataframe(json_file):
     rows = []
-    for snapshot in logs:
+    with open(json_file, 'r') as f:
+        data = json.load(f)  # Load the entire JSON array at once
+
+    for snapshot in data:
         for flow_id, stats in snapshot.items():
-            row = stats.copy()
-            row["flow_id"] = flow_id
+            row = {
+                "flow_id": flow_id,
+                "total_packets": stats["total_packets"],
+                "avg_packet_size": stats["avg_packet_size"],
+                "packet_rate": stats["packet_rate"],
+                "flow_duration": stats["flow_duration"]
+            }
             rows.append(row)
 
-    df = pd.DataFrame(rows)
-    return df
+    return pd.DataFrame(rows)
+
+def load_csv_as_dataframe(csv_path):
+    try:
+        df = pd.read_csv(csv_path)
+        return df
+    except Exception as e:
+        print(f"[!] Failed to load CSV: {e}")
+        return pd.DataFrame()
