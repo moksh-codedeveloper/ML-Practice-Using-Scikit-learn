@@ -31,7 +31,6 @@ def train_kmeans_model():
 
 if __name__ == "__main__":
     train_iso_forest_model()
-    train
     print("[+] All models trained successfully.")
     print("[+] Models saved to disk.")
     print("[+] You can now use these models for anomaly detection and clustering tasks.")
