@@ -12,7 +12,8 @@ def test_iso_models():
     print("[+] Testing Isolation Forest model...")
     predictions = model1.predict(X)
     print("[+] Isolation Forest model predictions:")
-    print(predictions)
+    for i in predictions :
+        print(f"Predictions : {1 if i == -1 else -1}")
 
 def test_kmeans_models():
     X = load_csv_as_dataframe("../logs/data_log.csv")
@@ -20,8 +21,10 @@ def test_kmeans_models():
     print("[+] Testing KMeans model...")
     predictions = model2.predict(X)
     print("[+] KMeans model predictions:")
-    print(predictions)
+    while len(predictions) :
+        print(f"Predictions : {1 if predictions[0] == 0 else -1}")
+        predictions = predictions[1:]
 
 if __name__ == "__main__":
-    # test_iso_models()
-    test_kmeans_models()
+    test_iso_models()
+    # test_kmeans_models()
