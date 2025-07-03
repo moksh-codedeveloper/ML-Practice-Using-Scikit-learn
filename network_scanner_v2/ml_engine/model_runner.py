@@ -21,10 +21,8 @@ def test_kmeans_models():
     print("[+] Testing KMeans model...")
     predictions = model2.predict(X)
     print("[+] KMeans model predictions:")
-    while len(predictions) :
-        print(f"Predictions : {1 if predictions[0] == 0 else -1}")
-        predictions = predictions[1:]
+    print(predictions)
 
 if __name__ == "__main__":
     test_iso_models()
-    # test_kmeans_models()
+    test_kmeans_models()

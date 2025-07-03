@@ -1,4 +1,3 @@
-from sklearn.ensemble import RandomForestClassifier 
 from sklearn.model_selection import train_test_split
 from sklearn.ensemble import IsolationForest 
 from sklearn.preprocessing import StandardScaler, MinMaxScaler
@@ -8,7 +7,7 @@ from sklearn.cluster import KMeans
 from core.feature_extracter import load_flow_stats_as_dataframe, load_csv_as_dataframe
 
 def train_iso_forest_model():
-    X = load_flow_stats_as_dataframe("./core/logs/flow_stats.json")
+    X = load_flow_stats_as_dataframe("./core/logs/traffic_monitor.csv")
     X = X.drop(columns=["flow_id", "timestamp", 'protocol'], errors='ignore')
     model = IsolationForest(contamination=0.3, random_state=42)
     model.fit(X)
@@ -26,6 +25,8 @@ def train_kmeans_model():
     model.fit(X)
     print("[+] KMeans model trained successfully.")
     joblib.dump(model, "./ml_engine/models/kmeans_model.pkl")
+
+
 
 if __name__ == "__main__":
     train_kmeans_model()
