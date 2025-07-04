@@ -15,7 +15,6 @@ def prepare_data(metrics):
         metrics["load_avg_15"],
         metrics["zombie_count"]
     ]).reshape(1, -1)
-
 def run_models(iso_model, reg_model):
     metrics = data_collector.collect_metrics()
 
@@ -33,13 +32,13 @@ def run_models(iso_model, reg_model):
     predictions = reg_model.predict(data)[0]
 
     regression_result = {
-        "predicted_cpu": float(predictions),
-        "predicted_ram": float(predictions),
-        "predicted_swap": float(predictions),
-        "predicted_disk": float(predictions),
-        "predicted_load_1": float(predictions),
-        "predicted_load_5": float(predictions),
-        "predicted_load_15": float(predictions)
+        "predicted_cpu": float(predictions[0]),
+        "predicted_ram": float(predictions[1]),
+        "predicted_swap": float(predictions[2]),
+        "predicted_disk": float(predictions[3]),
+        "predicted_load_1": float(predictions[4]),
+        "predicted_load_5": float(predictions[5]),
+        "predicted_load_15": float(predictions[6])
     }
 
     return {
