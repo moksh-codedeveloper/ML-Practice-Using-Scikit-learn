@@ -5,7 +5,7 @@ import hashlib
 import os, sys, time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.feature_extracter import load_csv_as_dataframe
-
+from utils.log_prediction import log_prediction
 # 🔁 Auto-grab the most recent CSV from logs
 def get_latest_monitor_csv(log_dir="./core/logs/", file_name="traffic_monitor_"):
     csv_files = [f for f in os.listdir(log_dir) if f.startswith(f"{file_name}") and f.endswith(".csv")]
@@ -18,12 +18,14 @@ def test_iso_models(model_name=joblib.load("./models/iso_forest_model.pkl")):
     X = load_csv_as_dataframe(get_latest_monitor_csv())
     X = X.drop(columns=["flow_id", "protocol"], errors="ignore")
     predictions = model_name.predict(X)
+    log_prediction("Isolation", predictions=predictions)
     return predictions
 
 def test_kmeans_models(model_name=joblib.load("./models/kmeans_model.pkl")):
     X = load_csv_as_dataframe(get_latest_monitor_csv("../logs/", "data_logs"))
     X = X.drop(columns=["ip_src", "ip_dest", "timestamp", "protocol", "app_protocol", "suspicious_keywords", "error"], errors="ignore")
     predictions = model_name.predict(X)
+    log_prediction("KMeans", predictions=predictions)
     return predictions
 
 def regressor_model(model_name=joblib.load("./models/regressor_model.pkl")):
@@ -34,13 +36,9 @@ def regressor_model(model_name=joblib.load("./models/regressor_model.pkl")):
         "app_protocol", "suspicious_keywords", "error"
     ], errors="ignore")
     predictions = model_name.predict(X)
+    log_prediction("Regressor", predictions=predictions)
     return predictions
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from core.feature_extracter import load_csv_as_dataframe
-
-
-# 🔁 Loop: watch for new logs and run ISO Forest
 def watch_and_test_iso(interval=30):
     print("[*] Watching logs every", interval, "seconds...")
     last_hash = None
