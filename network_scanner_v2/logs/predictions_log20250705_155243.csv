@@ -1,0 +1,5 @@
+timestamp,model,prediction_index,prediction_value
+2025-07-05 15:53:58,Isolation,0,1
+2025-07-05 15:53:58,Isolation,1,1
+2025-07-05 15:53:58,Isolation,2,1
+2025-07-05 15:53:58,Isolation,3,1
