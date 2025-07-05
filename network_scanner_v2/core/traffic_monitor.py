@@ -1,10 +1,11 @@
 # traffic_monitor.py
-from scapy.all import sniff, IP, TCP, UDP, ICMP
+from scapy.all import sniff
 from collections import defaultdict
 import threading
 import time
-import json
 import os 
+from scapy.layers.inet import IP, TCP, UDP, ICMP
+import csv
 flow_data = defaultdict(list)
 lock = threading.Lock()
 
@@ -51,23 +52,29 @@ def compute_flow_stats():
             flow_data.clear()
 
 def save_flow_stats(data):
-    log_path = "logs/flow_stats.json"
-
-    # Ensure logs directory exists
+    log_path = f"logs/traffic_monitor_{time.strftime('%Y%m%d_%H%M%S')}.csv"
     os.makedirs(os.path.dirname(log_path), exist_ok=True)
 
-    if not os.path.exists(log_path):
-        with open(log_path, "w") as f:
-            json.dump([data], f, indent=2)
-    else:
-        with open(log_path, "r+") as f:
-            try:
-                logs = json.load(f)
-            except:
-                logs = []
-            logs.append(data)
-            f.seek(0)
-            json.dump(logs, f, indent=2)
+    # Flatten the stats for CSV writing
+    rows = []
+    for flow, stats in data.items():
+        row = {
+            "flow_id": flow,
+            "total_packets": stats["total_packets"],
+            "avg_packet_size": stats["avg_packet_size"],
+            "packet_rate": stats["packet_rate"],
+            "flow_duration": stats["flow_duration"],
+            "protocol": stats["protocol"]
+        }
+        rows.append(row)
+
+    file_exists = os.path.isfile(log_path)
+    with open(log_path, "a", newline="") as csvfile:
+        fieldnames = ["flow", "total_packets", "avg_packet_size", "packet_rate", "flow_duration", "protocol"]
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        if not file_exists or os.stat(log_path).st_size == 0:
+            writer.writeheader()
+        writer.writerows(rows)
 
 def start_monitoring():
     threading.Thread(target=compute_flow_stats, daemon=True).start()
