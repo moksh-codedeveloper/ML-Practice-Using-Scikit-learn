@@ -1,12 +1,10 @@
-import os
-import json
+import os, time
 import csv
 from datetime import datetime
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
-JSON_LOG = os.path.join(LOG_DIR, "data_log.json")
-CSV_LOG = os.path.join(LOG_DIR, "data_log.csv")
+CSV_LOG = os.path.join(LOG_DIR, f"data_log_{time.strftime('%Y%m%d_%H%M%S')}.csv")
 
 def ensure_log_dir():
     if not os.path.exists(LOG_DIR):
