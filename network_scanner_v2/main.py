@@ -1,11 +1,9 @@
 from importlib import reload
 from fastapi import FastAPI
 from ml_engine.model_runner import test_iso_models, test_kmeans_models, regressor_model
-from core.feature_extracter import load_csv_as_dataframe
 from ml_engine.model_runner import get_latest_monitor_csv
 import uvicorn
-import os
-
+import joblib
 app = FastAPI()
 
 
@@ -18,7 +16,7 @@ def root():
 
 @app.get("/test_iso")
 def run_iso():
-    predictions = test_iso_models()
+    predictions = test_iso_models(model_name=joblib.load("./ml_engine/models/iso_forest_model.pkl"))
     return {
         "status": "✅ ISO Forest model tested",
         "total_predictions": len(predictions),
@@ -30,7 +28,7 @@ def run_iso():
 
 @app.get("/test_kmeans")
 def run_kmeans():
-    predictions = test_kmeans_models()
+    predictions = test_kmeans_models(model_name=joblib.load("./ml_engine/models/kmeans_model.pkl"))
     return {
         "status": "✅ KMeans model tested",
         "total_predictions": len(predictions),
@@ -39,7 +37,7 @@ def run_kmeans():
 
 @app.get("/test_regressor")
 def run_regressor():
-    predictions = regressor_model()
+    predictions = regressor_model(model_name=joblib.load("./ml_engine/models/regressor_model.pkl"))
     return {
         "status": "✅ Regressor model tested",
         "total_predictions": len(predictions),
@@ -49,8 +47,8 @@ def run_regressor():
 @app.get("/latest_csv")
 def latest_csvs():
     try:
-        traffic_csv = get_latest_monitor_csv()
-        data_csv = get_latest_monitor_csv("../logs/", "data_log")
+        traffic_csv = get_latest_monitor_csv("./core/logs", "traffic_monitor")
+        data_csv = get_latest_monitor_csv("./logs/", "data_log")
         return {
             "status": "✅ Latest CSV paths loaded",
             "traffic_monitor_csv": traffic_csv,

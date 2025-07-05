@@ -7,8 +7,8 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.feature_extracter import load_csv_as_dataframe
 from utils.log_prediction import log_prediction
 # 🔁 Auto-grab the most recent CSV from logs
-def get_latest_monitor_csv(log_dir="./core/logs/", file_name="traffic_monitor_"):
-    csv_files = [f for f in os.listdir(log_dir) if f.startswith(f"{file_name}") and f.endswith(".csv")]
+def get_latest_monitor_csv(log_dir="./core/logs/", file_name="traffic_monitor"):
+    csv_files = [f for f in os.listdir(log_dir) if f.startswith(f"{file_name}_") and f.endswith(".csv")]
     if not csv_files:
         raise FileNotFoundError("No traffic monitor CSV logs found.")
     return os.path.join(log_dir, sorted(csv_files)[-1])
