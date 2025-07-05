@@ -3,7 +3,7 @@ import joblib
 model2 = joblib.load("./models/kmeans_model.pkl")
 import os, sys
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-from core.feature_extracter import load_flow_stats_as_dataframe, load_csv_as_dataframe
+from core.feature_extracter import load_csv_as_dataframe
 
 def test_iso_models(model_name=joblib.load("./models/iso_forest_model.pkl")):
     X = load_csv_as_dataframe("../core/logs/traffic_monitor.csv")
