@@ -1,13 +1,13 @@
 import joblib
 # model1 = joblib.load("./models/iso_forest_model.pkl")
 model2 = joblib.load("./models/kmeans_model.pkl")
-import os, sys
+import os, sys, time
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.feature_extracter import load_csv_as_dataframe
 
 def test_iso_models(model_name=joblib.load("./models/iso_forest_model.pkl")):
-    X = load_csv_as_dataframe("../core/logs/traffic_monitor.csv")
-    X = X.drop(columns=["flow_id"], errors="ignore")
+    X = load_csv_as_dataframe(f"../core/logs/traffic_monitor_{time.strftime('%Y%m%d_%H%M%S')}.csv")
+    X = X.drop(columns=["flow_id", "protocol"], errors="ignore")
     predictions = model_name.predict(X)
     return predictions
 
@@ -26,3 +26,5 @@ def regressor_model(model_name=joblib.load("./models/regressor_model.pkl")):
     ], errors="ignore")
     predictions = model_name.predict(X)
     return predictions
+
+test_iso_models()

@@ -70,7 +70,7 @@ def save_flow_stats(data):
 
     file_exists = os.path.isfile(log_path)
     with open(log_path, "a", newline="") as csvfile:
-        fieldnames = ["flow", "total_packets", "avg_packet_size", "packet_rate", "flow_duration", "protocol"]
+        fieldnames = ["flow_id", "total_packets", "avg_packet_size", "packet_rate", "flow_duration", "protocol"]
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
         if not file_exists or os.stat(log_path).st_size == 0:
             writer.writeheader()
