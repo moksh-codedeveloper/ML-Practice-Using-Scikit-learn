@@ -1,9 +1,13 @@
 from fastapi import FastAPI
-from ml_engine.model_runner import test_iso_models, test_kmeans_models, regressor_model, get_latest_monitor_csv
-import joblib
-import uvicorn
-import os
-
+from ml_engine.model_runner import test_iso_models, test_kmeans_models, test_regressor_model, get_latest_monitor_csv
+import joblib, uvicorn, os, threading
+from train_models import  train_iso_forest_model
+from train_models import train_kmeans_model 
+from train_models import regressor_model
+from core.traffic_monitor import start_monitoring
+from core.packet_sniffer import run_sniffer
+from pydantic import BaseModel
+from enum import Enum
 app = FastAPI()
 
 # === Model Paths ===
@@ -52,7 +56,7 @@ def run_kmeans():
 def run_regressor():
     try:
         model = joblib.load(REGRESSOR_MODEL_PATH)
-        predictions = regressor_model(model)
+        predictions = test_regressor_model(model)
         return {
             "status": "✅ Regressor model tested",
             "total_predictions": len(predictions),
@@ -73,6 +77,48 @@ def latest_csvs():
         }
     except Exception as e:
         return {"error": f"CSV Path Error: {str(e)}"}
+
+
+@app.post("/scan")
+def scan_packets(count: int = 50, timeout: int = 10):
+    try:
+        threading.Thread(target=start_monitoring, daemon=True).start()
+        result = run_sniffer(count=count, timeout=timeout)
+
+        return {
+            "status": "✅ Scan complete",
+            "packet_sniffer": result,
+            "traffic_monitor": "✅ Flow monitoring started (running in background)"
+        }
+
+    except Exception as e:
+        return {
+            "status": "❌ Scan failed",
+            "error": str(e)
+        }
+
+
+
+class ModelEnum(str, Enum):
+    Isolation = "Isolation"
+    Regressor = "Regressor"
+    KMeans = "KMeans"
+
+class Retrain(BaseModel):
+    models_name: ModelEnum
+
+
+@app.post("/retrain")
+def retrain(payload: Retrain):
+    if payload.models_name == "Isolation":
+        train_iso_forest_model()
+    elif payload.models_name == "Regressor":
+        regressor_model()
+    elif payload.models_name == "KMeans":
+        train_kmeans_model()
+    else:
+        return {"message": "Not a valid model"}
+    return {"message": f"{payload.models_name} model retrained successfully ✅"}
 
 
 if __name__ == "__main__":

@@ -1,11 +1,14 @@
+# core/packet_sniffer.py
+
 from scapy.all import sniff
-from port_scanner import port_scanner, get_protocol
-from dns_resolver import build_dns_features, update_dns_stats
+from core.port_scanner import port_scanner, get_protocol
+from core.dns_resolver import build_dns_features, update_dns_stats
 import sys
 import os
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils import data_logger
-from device_fingerprinter import fingerprint_packet
+from core.device_fingerprinter import fingerprint_packet
 
 def live_sniffer(pkt):
     try:
@@ -24,11 +27,10 @@ def live_sniffer(pkt):
         dns_features = build_dns_features()
         dns_stats = {}  # Set to empty or your real-time DNS stats collector if any
 
-        # Device fingerprint
         fingerprint = fingerprint_packet(pkt)
         print(f"[DNS] {dns_features}")
         print(f"[Fingerprint] {fingerprint}")
-        # Log everything
+
         log_entry = {
             "ports": ports or {},
             "ip_src": ports['ip_src'] if ports else "0.0.0.0",
@@ -48,5 +50,7 @@ def live_sniffer(pkt):
         print(f"[Sniffer Error] {e}")
         data_logger.log_data({"error": str(e)})
 
-# Start sniffing packets (count=0 = continuous)
-sniff(filter="ip", prn=live_sniffer, store=False, count=0, timeout=10)
+def run_sniffer(count=50, timeout=10):
+    print(f"[⚡] Sniffing {count} packets or until timeout = {timeout}s")
+    sniff(filter="ip", prn=live_sniffer, store=False, count=count, timeout=timeout)
+    return f"✅ Sniffed {count} packets or until timeout"

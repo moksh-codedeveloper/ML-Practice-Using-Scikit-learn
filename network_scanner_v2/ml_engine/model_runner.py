@@ -1,5 +1,6 @@
 import hashlib
 import os, sys, time
+from xml.parsers.expat import model
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.feature_extracter import load_csv_as_dataframe
 from utils.log_prediction import log_prediction
@@ -35,7 +36,7 @@ def test_kmeans_models(model_name):
     return predictions
 
 # 🔎 Regressor
-def regressor_model(model_name):
+def test_regressor_model(model_name):
     metrics = load_csv_as_dataframe(get_latest_monitor_csv("./logs/", "data_log"))
     X = metrics.drop(columns=["ip_src", "ip_dest", "timestamp", "protocol", "app_protocol", "suspicious_keywords", "error"], errors="ignore")
     predictions = model_name.predict(X)
@@ -102,7 +103,7 @@ def watch_and_test_reg(interval=30):
 
             if current_hash != last_hash:
                 print("\n[⚡] New traffic log found. Running Regressor model...")
-                regressor_model(model_path)
+                test_regressor_model(model_path)
                 last_hash = current_hash
             else:
                 print("[*] No new logs. Waiting...")
