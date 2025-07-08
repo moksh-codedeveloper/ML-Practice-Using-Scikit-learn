@@ -50,7 +50,7 @@ def live_sniffer(pkt):
         print(f"[Sniffer Error] {e}")
         data_logger.log_data({"error": str(e)})
 
-def run_sniffer(count=50, timeout=10):
+def run_sniffer(count, timeout):
     print(f"[⚡] Sniffing {count} packets or until timeout = {timeout}s")
     sniff(filter="ip", prn=live_sniffer, store=False, count=count, timeout=timeout)
     return f"✅ Sniffed {count} packets or until timeout"

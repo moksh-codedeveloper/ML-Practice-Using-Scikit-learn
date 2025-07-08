@@ -78,12 +78,16 @@ def latest_csvs():
     except Exception as e:
         return {"error": f"CSV Path Error: {str(e)}"}
 
+class ScanRequest(BaseModel):
+    count: int 
+    timeout: int
+
 
 @app.post("/scan")
-def scan_packets(count: int = 50, timeout: int = 10):
+def scan_packets(request:ScanRequest):
     try:
         threading.Thread(target=start_monitoring, daemon=True).start()
-        result = run_sniffer(count=count, timeout=timeout)
+        result = run_sniffer(count=request.count, timeout=request.timeout)
 
         return {
             "status": "✅ Scan complete",
